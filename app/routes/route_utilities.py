@@ -29,6 +29,9 @@ def create_model(cls, model_data):
     except KeyError as error:
         response = {"message": f"invalid {cls.__name__}: missing {error.args[0]}"}
         abort(make_response(response, 400))
+    except:
+        response = {"message": f"invalid {cls.__name__}: message cannot be empty or over 40 characters long"}
+        abort(make_response(response, 400))        
     db.session.add(new_model)
     db.session.commit()
     return new_model.to_dict(), 201

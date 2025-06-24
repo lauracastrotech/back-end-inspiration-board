@@ -19,5 +19,7 @@ class Card(db.Model):
     
     @classmethod
     def make_new(cls, dict):
+        if len(dict["message"]) > 40 or len(dict["message"]) == 0:
+            raise Exception 
         new_card = Card(message=dict["message"], board_id=dict["board_id"])
         return new_card

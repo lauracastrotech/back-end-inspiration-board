@@ -14,9 +14,4 @@ class Board(db.Model):
     @classmethod
     def make_new(cls, dict):
         new_book = cls(title=dict["title"], owner=dict["owner"])
-        # try:
-        #     new_book = cls(title=dict["title"], owner=dict["owner"])
-        # except KeyError as error:
-        #     response = {"message": f"invalid: missing error.args[0]"}
-        #     abort(make_response(response, 400))
         return new_book

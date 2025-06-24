@@ -1,5 +1,5 @@
 import pytest
-from app.models.Board import Board
+from app.models.board import Board
 # from flask import request
 from app.db import db
 
@@ -22,6 +22,7 @@ def test_get_all_boards_with_one_board(client, one_board):
     assert response.get_json() == [{"id": 1, "title": "First Board", "owner": "First Owner"}]
     assert len(response.get_json()) == 1
 
+
 def test_get_all_boards_with_many_boards(client, many_boards):
     response = client.get("/boards")
 
@@ -34,17 +35,20 @@ def test_get_all_boards_with_many_boards(client, many_boards):
                                    ]
     assert len(response.get_json()) == 5
 
+
 def test_get_one_board_returns_specific_board_of_many(client, many_boards):
     response = client.get("/boards/2")
 
     assert response.status_code == 200
     assert response.get_json() == {"id": 2, "title": "Second Board", "owner": "Betty"}
-    
+
+
 def test_get_one_board_returns_another_board_of_many(client, many_boards):
     response = client.get("/boards/4")
 
     assert response.status_code == 200
     assert response.get_json() == {"id": 4, "title": "Fourth Board", "owner": "Debbie"}
+
 
 def test_get_one_board_invalid_id(client, many_boards):
     response = client.get("/boards/one")
@@ -52,11 +56,13 @@ def test_get_one_board_invalid_id(client, many_boards):
     assert response.status_code == 400
     assert response.get_json() == {"message": "Board one is invalid"}
 
+
 def test_get_one_board_nonexistent_id_of_many(client, many_boards):
     response = client.get("/boards/17")
 
     assert response.status_code == 404
     assert response.get_json() == {"message": "Board 17 not found"}
+
 
 def test_get_one_board_nonexistent_id_of_none(client):
     response = client.get("/boards/1")
@@ -64,14 +70,70 @@ def test_get_one_board_nonexistent_id_of_none(client):
     assert response.status_code == 404
     assert response.get_json() == {"message": "Board 1 not found"}
 
+
 def test_make_new_board(client):
     response = client.post("/boards", json={"title": "Shire", "owner": "Frodo"})
 
     assert response.status_code == 201
     assert response.get_json() == {"id": 1, "title": "Shire", "owner": "Frodo"}
 
-def test_make_new_card(client, one_board, one_card):
+
+def test_make_new_card(client, one_board):
     response = client.post("/boards/1/cards", json={"message": "new message", "board_id": 1})
 
     assert response.status_code == 201
-    assert response.get_json() == {"message": "new message","board_id": 1}    
+    assert response.get_json()["message"] == "new message"
+    assert response.get_json()["board_id"] == 1    
+
+def test_get_one_card_of_one(client, one_board, one_card):
+    response = client.get("/boards/1/cards")
+
+    assert response.status_code == 200
+
+    assert response.get_json()[0]["message"] == "new message"
+    assert response.get_json()[0]["board_id"] == 1
+
+
+def test_get_one_card_of_many_cards_from_one_board(client, one_board, many_cards):
+    response = client.get("/boards/1/cards")
+
+    assert response.status_code == 200
+    
+    assert response.get_json()[0]["message"] == "new message"
+    assert response.get_json()[0]["board_id"] == 1
+    assert response.get_json()[1]["message"] == "second message"
+    assert response.get_json()[1]["board_id"] == 1
+    assert response.get_json()[2]["message"] == "third message"
+    assert response.get_json()[2]["board_id"] == 1
+    assert response.get_json()[3]["message"] == "fourth message"
+    assert response.get_json()[3]["board_id"] == 1
+    assert response.get_json()[4]["message"] == "fifth message"
+    assert response.get_json()[4]["board_id"] == 1
+
+
+def test_get_one_card_of_no_cards(client, one_board):
+    response = client.get("/boards/1/cards")
+
+    assert response.status_code == 200
+    assert response.get_json() == []
+    
+
+def test_make_new_card_missing_message_error(client, one_board):
+    response = client.post("/boards/1/cards", json={"board_id": 1})
+    assert response.status_code == 400
+    assert response.get_json() == {"message": "invalid Card: missing message"}
+
+
+def test_make_new_card_too_long_error(client, one_board):
+    response = client.post("/boards/1/cards", json={"message": "This is an example of a string that's too long", "board_id": 1})
+
+    assert response.status_code == 400
+    assert response.get_json() == {"message": 
+                                   "invalid Card: message cannot be empty or over 40 characters long"} 
+
+def test_make_new_card_empty_message_error(client, one_board):
+    response = client.post("/boards/1/cards", json={"message": "", "board_id": 1})
+
+    assert response.status_code == 400
+    assert response.get_json() == {"message": 
+                                   "invalid Card: message cannot be empty or over 40 characters long"} 

@@ -1,7 +1,6 @@
 from flask import Blueprint, request
-# from app.models import Board, Card
-from app.models.Board import Board
-from app.models.Card import Card
+from app.models.board import Board
+from app.models.card import Card
 from ..db import db
 from .route_utilities import validate_model, create_model
 
@@ -28,24 +27,7 @@ def get_one_board(board_id):
 @boards_bp.post("")
 def make_new_board():
     request_body = request.get_json()
-    # new_board = Board.make_new(request_body)
-    # db.session.add(new_board)
-    # db.session.commit()
-    # return new_board.to_dict(), 201
     return create_model(Board, request_body)
-
-# def validate_board(board_id):
-#     try:
-#         board_id = int(board_id)
-#     except:
-#         response = {"message": f"book {board_id} invalid"}
-#         abort(400, Response())
-#     query = db.select(Board).where(Board.board_id == board_id)
-#     board = db.session.scalar(query) 
-    
-#     if not board:
-#         return 400
-#     return board
 
 @boards_bp.post("/<board_id>/cards")
 def make_new_card(board_id):
@@ -56,3 +38,12 @@ def make_new_card(board_id):
     # db.session.commit()
     # return new_card.to_dict(), 201
     return create_model(Card, request_body)
+
+
+@boards_bp.get("/<board_id>/cards")
+def get_card(board_id):
+    board = validate_model(Board, board_id)
+    cards_list = []
+    for card in board.cards:
+        cards_list.append(card.to_dict())
+    return cards_list

@@ -4,8 +4,8 @@ from app.db import db
 from flask.signals import request_finished
 from dotenv import load_dotenv
 import os
-from app.models.Board import Board
-from app.models.Card import Card
+from app.models.board import Board
+from app.models.card import Card
 
 load_dotenv()
 
@@ -54,3 +54,32 @@ def one_card(app):
     new_card = Card(message="new message", board_id=1) 
     db.session.add(new_card)
     db.session.commit()
+
+@pytest.fixture
+def many_cards(app):
+    cards_list = [Card(message="new message", board_id=1),
+                  Card(message="second message", board_id=1), 
+                  Card(message="third message", board_id=1),
+                  Card(message="fourth message", board_id=1), 
+                  Card(message="fifth message", board_id=1)] 
+    db.session.add_all(cards_list)
+    db.session.commit()
+
+# #may be unneeded
+# @pytest.fixture
+# def many_cards_many_boards(app):
+#     # cards_list = [Card(message="new message", board_id=1),
+#     #               Card(message="second message", board_id=1), 
+#     #               Card(message="msg for second board", board_id=2),
+#     #               Card(message="another msg for second board", board_id=2), 
+#     #               Card(message="msg for third board message", board_id=3)] 
+#     # db.session.add_all(cards_list)
+#     # db.session.commit()
+#     cards_list_1 = [Card(message="new message", board_id=1),
+#                   Card(message="second message", board_id=1)] 
+#     db.session.add_all(cards_list_1)
+#     # db.session.commit()
+#     cards_list_2 = [Card(message="msg for second board", board_id=2),
+#                   Card(message="another msg for second board", board_id=2)] 
+#     db.session.add_all(cards_list_2)
+#     db.session.commit()

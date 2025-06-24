@@ -1,4 +1,4 @@
-from app.models.Card import Card
+from app.models.card import Card
 
 
 def test_to_dict():
