@@ -2,7 +2,7 @@ from flask import Flask
 from flask_cors import CORS
 import os
 from .db import db, migrate
-from .models import Board, Card
+from .models import board, card
 # Import models, blueprints, and anything else needed to set up the app or database
 
 
