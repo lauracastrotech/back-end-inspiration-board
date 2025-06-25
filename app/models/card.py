@@ -14,7 +14,7 @@ class Card(db.Model):
     likes_count: Mapped[int]
 
     board_id: Mapped[int] = mapped_column(ForeignKey("board.board_id")) 
-    board: Mapped["Board"] = relationship(back_populates="card")
+    board: Mapped["Board"] = relationship(back_populates="cards")
     
     def to_dict(self):
         card_as_dict = {
@@ -29,9 +29,8 @@ class Card(db.Model):
     @classmethod
     def from_dict(cls, card_data):
         new_card = Card(
-            card_id=card_data["card_id"],
-            message=card_data["message"],
-            likes_count=card_data["likes_count"],
-            board_id=card_data["board_id"]
+            message = card_data["message"],
+            likes_count = card_data["likes_count"],
+            board_id = card_data["board_id"]
         )
         return new_card
