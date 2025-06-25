@@ -28,4 +28,3 @@ This file lists the dependencies we anticipate are needed for the project.
 
 This is a hidden file which lists specific files and file extension types that should be ignored by the git repo when looking for changed files to stage.
 
-- this is to update file name
