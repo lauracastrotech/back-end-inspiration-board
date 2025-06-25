@@ -1,4 +1,4 @@
-from flask import Blueprint, Response, make_response
+from flask import Blueprint
 from app.models.card import Card
 from app.routes.route_utilities import validate_model
 from ..db import db
@@ -10,11 +10,14 @@ def delete_card(card_id):
     card = validate_model(Card, card_id)
     db.session.delete(card)
     db.session.commit()
-    return Response(status=204, mimetype="application/json")
+    response = {"message": f"Card {card_id} deleted"}
+    return response
 
-@cards_bp.put("/<card_id>")
+
+@cards_bp.put("/<card_id>/likes")
 def update_card_likes(card_id):
     card = validate_model(Card, card_id)
-    card.likes += 1
+    card.likes_count = card.likes_count + 1
+    print(card.likes_count)
     db.session.commit()
-    return Response(status=204, mimetype="application/json")
+    return card.to_dict()

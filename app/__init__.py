@@ -4,6 +4,7 @@ import os
 from .db import db, migrate
 from .models.board import Board
 from .routes.board_routes import boards_bp
+from .routes.card_routes import cards_bp
 
 
 def create_app(config=None):
@@ -21,6 +22,7 @@ def create_app(config=None):
 
     # Register Blueprints 
     app.register_blueprint(boards_bp)
+    app.register_blueprint(cards_bp)
 
     CORS(app)
     return app

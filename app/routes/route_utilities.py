@@ -1,5 +1,6 @@
 from ..db import db
 from flask import abort, make_response
+# from sqlalchemy import inspect
 
 def validate_model(cls, model_id):
     try:
@@ -7,21 +8,19 @@ def validate_model(cls, model_id):
     except:
         response = {"message": f"{cls.__name__} {model_id} is invalid"}
         abort(make_response(response, 400))
-    # this_id = "board_id" if cls == "Board" else "card_id"
-    # query = db.select(cls.where(cls.id == model_id))
-    # query = db.select(Board).where(Board.board_id == board_id)
-    # if cls == "Card":
-    #     query = db.select(cls).where(cls.card_id == model_id)
-    # if cls == "Board":
-    #     query = db.select(cls).where(cls.board_id == model_id)
+    
+    # cleaner option? use inspect to get primary key of class instead of hard coding board_id or card_id
+    # primary_key = inspect(cls).primary_key[0]
+    # query = db.select(cls).where(primary_key == model_id)
 
-    # query = db.select(cls).where(cls.board_id == model_id) if cls == "Board" else db.select(cls).where(cls.card_id == model_id)
-    query = db.select(cls).where(cls.board_id == model_id)
+    mod_id = cls.board_id if cls.__name__ == "Board" else cls.card_id
+    query = db.select(cls).where(mod_id == model_id)
     model = db.session.scalar(query) 
     if not model:
         response = {"message": f"{cls.__name__} {model_id} not found"}
         abort(make_response(response, 404)) 
     return model
+
 
 def create_model(cls, model_data):
     try:
