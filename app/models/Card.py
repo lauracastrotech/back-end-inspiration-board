@@ -10,16 +10,17 @@ class Card(db.Model):
     board: Mapped["Board"] = relationship(back_populates="cards")
 
     def to_dict(self):
-        card_dict = {
-            "id": self.card_id, 
+        card_dict = {"id": self.card_id, 
                      "message": self.message, 
                      "likes_count": self.likes_count,
                      "board_id": self.board_id}
         return card_dict
     
     @classmethod
-    def make_new(cls, dict):
-        if len(dict["message"]) > 40 or len(dict["message"]) == 0:
+    def make_new(cls, card_data):
+        if len(card_data["message"]) > 40 or len(card_data["message"]) == 0:
             raise Exception 
-        new_card = Card(message=dict["message"], board_id=dict["board_id"])
+        new_card = Card(message=card_data["message"], 
+                        board_id=card_data["board_id"], 
+                        likes_count=card_data.get("likes_count", 0))
         return new_card

@@ -37,7 +37,7 @@ def make_new_card(board_id):
 
 
 @boards_bp.get("/<board_id>/cards")
-def get_cards(board_id):
+def get_cards_for_board(board_id):
     board = validate_model(Board, board_id)
     cards_list = []
     for card in board.cards:
